@@ -7,6 +7,7 @@ import com.buuz135.simpleclaims.config.SimpleClaimsConfig;
 import com.buuz135.simpleclaims.map.SimpleClaimsChunkWorldMap;
 import com.buuz135.simpleclaims.map.SimpleClaimsWorldMapProvider;
 import com.buuz135.simpleclaims.systems.events.BreakBlockEventSystem;
+import com.buuz135.simpleclaims.systems.events.InteractEventSystem;
 import com.buuz135.simpleclaims.systems.events.PlaceBlockEventSystem;
 import com.buuz135.simpleclaims.systems.tick.TitleTickingSystem;
 
@@ -14,6 +15,7 @@ import com.buuz135.simpleclaims.systems.tick.WorldMapUpdateTickingSystem;
 import com.hypixel.hytale.builtin.teleport.TeleportPlugin;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.event.events.player.AddPlayerToWorldEvent;
+import com.hypixel.hytale.server.core.event.events.player.PlayerInteractEvent;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 
@@ -50,6 +52,7 @@ public class Main extends JavaPlugin {
 
         this.getEntityStoreRegistry().registerSystem(new BreakBlockEventSystem());
         this.getEntityStoreRegistry().registerSystem(new PlaceBlockEventSystem());
+        this.getEntityStoreRegistry().registerSystem(new InteractEventSystem());
         this.getEntityStoreRegistry().registerSystem(new TitleTickingSystem());
         this.getChunkStoreRegistry().registerSystem(new WorldMapUpdateTickingSystem());
         this.getCommandRegistry().registerCommand(new SimpleClaimProtectCommand());
