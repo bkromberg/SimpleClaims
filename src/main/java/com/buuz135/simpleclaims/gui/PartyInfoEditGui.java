@@ -38,6 +38,15 @@ public class PartyInfoEditGui extends InteractiveCustomUIPage<PartyInfoEditGui.P
     @Override
     public void handleDataEvent(@NonNullDecl Ref<EntityStore> ref, @NonNullDecl Store<EntityStore> store, @NonNullDecl PartyInfoData data) {
         super.handleDataEvent(ref, store, data);
+        var player = store.getComponent(ref, PlayerRef.getComponentType());
+        var playerCanModify = this.info.isOwner(player.getUuid());
+        if (!playerCanModify) {
+            UICommandBuilder commandBuilder = new UICommandBuilder();
+            UIEventBuilder eventBuilder = new UIEventBuilder();
+            this.build(ref, commandBuilder, eventBuilder, store);
+            this.sendUpdate(commandBuilder, eventBuilder, true);
+            return;
+        }
         if (data.name != null) {
             this.name = data.name;
         }
@@ -110,7 +119,7 @@ public class PartyInfoEditGui extends InteractiveCustomUIPage<PartyInfoEditGui.P
                 uiCommandBuilder.set("#MemberEntries[" + i + "] #MemberRole.OutlineColor", "#1a8decde");
             }
             if (!playerCanModify || isOwner){
-                //uiCommandBuilder.remove("#Members[" + i + "] #RemoveMemberButton");
+                uiCommandBuilder.set("#MemberEntries[" + i + "] #RemoveMemberButton.Disabled", true);
             } else {
                 //uiEventBuilder.addEventBinding(CustomUIEventBindingType.SlotMouseExited, "#Members[" + i + "] #RemoveMemberButton", EventData.of("RemoveButtonAction", "Left:" + i), false);
                 if (this.requestingConfirmation == i) {
@@ -126,17 +135,21 @@ public class PartyInfoEditGui extends InteractiveCustomUIPage<PartyInfoEditGui.P
         uiEventBuilder.addEventBinding(CustomUIEventBindingType.Activating, "#CancelButton", EventData.of("Cancel", "true"), false);
 
         uiCommandBuilder.set("#PlaceBlocksSetting #CheckBox.Value", this.info.isBlockPlaceEnabled());
+        uiCommandBuilder.set("#PlaceBlocksSetting #CheckBox.Disabled", !playerCanModify);
         uiCommandBuilder.set("#BreakBlocksSetting #CheckBox.Value", this.info.isBlockBreakEnabled());
+        uiCommandBuilder.set("#BreakBlocksSetting #CheckBox.Disabled", !playerCanModify);
         uiCommandBuilder.set("#InteractBlocksSetting #CheckBox.Value",this.info.isBlockInteractEnabled());
-
-        uiCommandBuilder.set("#ClaimColorPickerGroup #ClaimColorPicker.Value", String.format("#%06X", (0xFFFFFF & this.info.getColor())));
-
-        uiCommandBuilder.set("#ClaimedChunksInfo #ClaimedChunksCount.Text", ClaimManager.getInstance().getAmountOfClaims(this.info)+ "");
-        uiCommandBuilder.set("#ClaimedChunksInfo #MaxChunksCount.Text",this.info.getMaxClaimAmount() + "");
+        uiCommandBuilder.set("#InteractBlocksSetting #CheckBox.Disabled", !playerCanModify);
 
         uiEventBuilder.addEventBinding(CustomUIEventBindingType.ValueChanged, "#PlaceBlocksSetting #CheckBox", EventData.of("RemoveButtonAction", "PlaceBlocksSetting:0"), false);
         uiEventBuilder.addEventBinding(CustomUIEventBindingType.ValueChanged, "#BreakBlocksSetting #CheckBox", EventData.of("RemoveButtonAction", "BreakBlocksSetting:0"), false);
         uiEventBuilder.addEventBinding(CustomUIEventBindingType.ValueChanged, "#InteractBlocksSetting #CheckBox", EventData.of("RemoveButtonAction", "InteractBlocksSetting:0"), false);
+
+        uiCommandBuilder.set("#ClaimColorPickerGroup #ClaimColorPicker.Value", String.format("#%06X", (0xFFFFFF & this.info.getColor())));
+        //uiCommandBuilder.set("#ClaimColorPickerGroup #ClaimColorPicker.IsReadOnly", !playerCanModify);
+
+        uiCommandBuilder.set("#ClaimedChunksInfo #ClaimedChunksCount.Text", ClaimManager.getInstance().getAmountOfClaims(this.info)+ "");
+        uiCommandBuilder.set("#ClaimedChunksInfo #MaxChunksCount.Text",this.info.getMaxClaimAmount() + "");
 
         uiEventBuilder.addEventBinding(CustomUIEventBindingType.ValueChanged, "#ClaimColorPicker", EventData.of("@ClaimColor", "#ClaimColorPicker.Value"), false);
     }
