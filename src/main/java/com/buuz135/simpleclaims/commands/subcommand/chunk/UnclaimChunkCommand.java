@@ -1,12 +1,9 @@
-package com.buuz135.simpleclaims.commands;
+package com.buuz135.simpleclaims.commands.subcommand.chunk;
 
-import com.buuz135.simpleclaims.commands.subcommand.chunk.ClaimChunkCommand;
-import com.buuz135.simpleclaims.commands.subcommand.chunk.UnclaimChunkCommand;
-import com.buuz135.simpleclaims.gui.ChunkInfoGui;
+import com.buuz135.simpleclaims.claim.ClaimManager;
+import com.buuz135.simpleclaims.commands.CommandMessages;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
-import com.hypixel.hytale.math.util.ChunkUtil;
-import com.hypixel.hytale.protocol.GameMode;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.command.system.CommandSender;
 import com.hypixel.hytale.server.core.command.system.basecommands.AsyncCommandBase;
@@ -20,16 +17,10 @@ import java.util.concurrent.CompletableFuture;
 
 import static com.hypixel.hytale.server.core.command.commands.player.inventory.InventorySeeCommand.MESSAGE_COMMANDS_ERRORS_PLAYER_NOT_IN_WORLD;
 
-public class SimpleClaimProtectCommand extends AsyncCommandBase {
+public class UnclaimChunkCommand extends AsyncCommandBase {
 
-    public SimpleClaimProtectCommand() {
-        super("simpleclaims", "Opens the chunk claim gui");
-        this.addAliases("sc", "sc-chunks", "scc");
-        this.setPermissionGroup(GameMode.Adventure);
-
-        this.addSubCommand(new ClaimChunkCommand());
-        this.addSubCommand(new UnclaimChunkCommand());
-
+    public UnclaimChunkCommand() {
+        super("unclaim", "Unclaims the chunk where you are");
     }
 
     @NonNullDecl
@@ -44,7 +35,22 @@ public class SimpleClaimProtectCommand extends AsyncCommandBase {
                 return CompletableFuture.runAsync(() -> {
                     PlayerRef playerRefComponent = store.getComponent(ref, PlayerRef.getComponentType());
                     if (playerRefComponent != null) {
-                        player.getPageManager().openCustomPage(ref, store, new ChunkInfoGui(playerRefComponent, player.getWorld().getName(), ChunkUtil.chunkCoordinate(player.getPosition().getX()), ChunkUtil.chunkCoordinate(player.getPosition().getZ()) ));
+                        var party = ClaimManager.getInstance().getPartyFromPlayer(player);
+                        if (party == null) {
+                            player.sendMessage(CommandMessages.NOT_IN_A_PARTY);
+                            return;
+                        }
+                        var chunk = ClaimManager.getInstance().getChunkRawCoords(player.getWorld().getName(), (int) player.getPosition().getX(), (int) player.getPosition().getZ());
+                        if (chunk == null) {
+                            player.sendMessage(CommandMessages.NOT_CLAIMED);
+                            return;
+                        }
+                        if (!chunk.getPartyOwner().equals(party.getId())) {
+                            player.sendMessage(CommandMessages.NOT_YOUR_CLAIM);
+                            return;
+                        }
+                        ClaimManager.getInstance().unclaimRawCoords(player.getWorld().getName(), (int) player.getPosition().getX(), (int) player.getPosition().getZ());
+                        player.sendMessage(CommandMessages.UNCLAIMED);
                     }
                 }, world);
             } else {

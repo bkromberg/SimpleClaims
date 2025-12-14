@@ -22,7 +22,7 @@ import static com.hypixel.hytale.server.core.command.commands.player.inventory.I
 public class ClaimChunkCommand extends AsyncCommandBase {
 
     public ClaimChunkCommand() {
-        super("claim", "Clains the current chunk");
+        super("claim", "Claims the chunk where you are");
     }
 
     @NonNullDecl
