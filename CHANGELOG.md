@@ -1,3 +1,15 @@
+# 1.0.11
+
+* Players can now be invited to a party from the edit party screen closes #15
+* Pending player invites now show in the member list of the party
+* Added ally system to parties, closes #28
+* Added a button to the admin party screen to open the claim chunks gui in admin mode, closes #31
+* Added a command to change the chunk amount for all parties, closes #14
+
+# 1.0.10
+
+* Fixed Map Ticking task running off thread when checking for components, closes #18
+
 # 1.0.9
 
 * Fixed players not being removed from the player to party cache when kicked from a party
