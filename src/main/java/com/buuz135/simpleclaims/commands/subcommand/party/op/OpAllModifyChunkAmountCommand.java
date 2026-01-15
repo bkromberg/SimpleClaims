@@ -1,17 +1,16 @@
-package com.buuz135.simpleclaims.commands;
+package com.buuz135.simpleclaims.commands.subcommand.party.op;
 
 import com.buuz135.simpleclaims.claim.ClaimManager;
-import com.buuz135.simpleclaims.commands.subcommand.party.CreatePartyCommand;
-import com.buuz135.simpleclaims.commands.subcommand.party.PartyAcceptCommand;
-import com.buuz135.simpleclaims.commands.subcommand.party.PartyInviteCommand;
-import com.buuz135.simpleclaims.commands.subcommand.party.PartyLeaveCommand;
-import com.buuz135.simpleclaims.commands.subcommand.party.op.*;
-import com.buuz135.simpleclaims.gui.PartyInfoEditGui;
+import com.buuz135.simpleclaims.claim.party.PartyOverride;
+import com.buuz135.simpleclaims.claim.party.PartyOverrides;
+import com.buuz135.simpleclaims.commands.CommandMessages;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.protocol.GameMode;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.command.system.CommandSender;
+import com.hypixel.hytale.server.core.command.system.arguments.system.RequiredArg;
+import com.hypixel.hytale.server.core.command.system.arguments.types.ArgTypes;
 import com.hypixel.hytale.server.core.command.system.basecommands.AbstractAsyncCommand;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
@@ -23,23 +22,14 @@ import java.util.concurrent.CompletableFuture;
 
 import static com.hypixel.hytale.server.core.command.commands.player.inventory.InventorySeeCommand.MESSAGE_COMMANDS_ERRORS_PLAYER_NOT_IN_WORLD;
 
-public class SimpleClaimsPartyCommand extends AbstractAsyncCommand {
+public class OpAllModifyChunkAmountCommand extends AbstractAsyncCommand {
 
-    public SimpleClaimsPartyCommand() {
-        super("simpleclaimsparty", "Simple Claims Party Commands" );
-        this.addAliases("scp", "sc-party");
-        this.setPermissionGroup(GameMode.Adventure);
+    private RequiredArg<Integer> amount;
 
-        this.addSubCommand(new CreatePartyCommand());
-        this.addSubCommand(new PartyInviteCommand());
-        this.addSubCommand(new PartyAcceptCommand());
-        this.addSubCommand(new PartyLeaveCommand());
-        //OP Commands
-        this.addSubCommand(new OpCreatePartyCommand());
-        this.addSubCommand(new OpPartyListCommand());
-        this.addSubCommand(new OpModifyChunkAmountCommand());
-        this.addSubCommand(new OpAllModifyChunkAmountCommand());
-        this.addSubCommand(new OpOverrideCommand());
+    public OpAllModifyChunkAmountCommand() {
+        super("admin-modify-chunk-all", "Changes the chunk amount limit of all parties");
+        this.setPermissionGroup(GameMode.Creative);
+        this.amount = this.withRequiredArg("amount", "The amount of chunks the party can claim", ArgTypes.INTEGER);
     }
 
     @NonNullDecl
@@ -54,12 +44,12 @@ public class SimpleClaimsPartyCommand extends AbstractAsyncCommand {
                 return CompletableFuture.runAsync(() -> {
                     PlayerRef playerRef = store.getComponent(ref, PlayerRef.getComponentType());
                     if (playerRef != null) {
-                        var party = ClaimManager.getInstance().getPartyFromPlayer(playerRef.getUuid());
-                        if (party == null) {
-                            commandContext.sendMessage(CommandMessages.NOT_IN_A_PARTY);
-                            return;
-                        }
-                        player.getPageManager().openCustomPage(ref, store, new PartyInfoEditGui(playerRef, party, false));
+                        var selectedAmount = amount.get(commandContext);
+                        ClaimManager.getInstance().getParties().values().forEach(party -> {
+                            party.setOverride(new PartyOverride(PartyOverrides.CLAIM_CHUNK_AMOUNT, new PartyOverride.PartyOverrideValue("integer", selectedAmount)));
+                        });
+                        player.sendMessage(CommandMessages.MODIFIED_MAX_CHUNK_AMOUNT.param("party_name", "all parties").param("amount", selectedAmount));
+                        ClaimManager.getInstance().markDirty();
                     }
                 }, world);
             } else {
