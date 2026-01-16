@@ -109,20 +109,6 @@ public class PartyInfo {
         return new ArrayList<>(overrideMap.values());
     }
 
-    public void setOverrides(List<PartyOverride> overrides) {
-        this.overrideMap.clear();
-        for (PartyOverride override : overrides) {
-            this.overrideMap.put(override.getType(), override);
-        }
-    }
-
-    public void setOverrides(PartyOverride[] overrides) {
-        this.overrideMap.clear();
-        for (PartyOverride override : overrides) {
-            this.overrideMap.put(override.getType(), override);
-        }
-    }
-
     public void addMember(UUID uuid){
         memberSet.add(uuid);
     }
@@ -173,6 +159,9 @@ public class PartyInfo {
     }
 
     public void setOverride(PartyOverride override){
+        if (override.getType().equals(PartyOverrides.CLAIM_CHUNK_AMOUNT)
+                && (int) override.getValue().tryGetTypedValue().orElse(0) == Main.CONFIG.get().getDefaultPartyClaimsAmount())
+            return;
         overrideMap.put(override.getType(), override);
     }
 
