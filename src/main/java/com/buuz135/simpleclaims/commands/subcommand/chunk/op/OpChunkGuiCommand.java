@@ -42,10 +42,6 @@ public class OpChunkGuiCommand extends AbstractAsyncCommand {
                 return CompletableFuture.runAsync(() -> {
                     PlayerRef playerRef = ref.getStore().getComponent(ref, PlayerRef.getComponentType());
                     if (playerRef == null) return;
-                    if (!ClaimManager.getInstance().canClaimInDimension(world)) {
-                        player.sendMessage(CommandMessages.CANT_CLAIM_IN_THIS_DIMENSION);
-                        return;
-                    }
                     var position = store.getComponent(ref, TransformComponent.getComponentType());
                     player.getPageManager().openCustomPage(ref, store, new ChunkInfoGui(playerRef, player.getWorld().getName(), ChunkUtil.chunkCoordinate(position.getPosition().getX()), ChunkUtil.chunkCoordinate(position.getPosition().getZ()), true));
                 }, world);

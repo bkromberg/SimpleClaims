@@ -31,6 +31,9 @@ public class SimpleClaimsConfig {
             .append(new KeyedCodec<Boolean>("AllowPartyPVPSetting", Codec.BOOLEAN),
                     (simpleClaimsConfig, value, extraInfo) -> simpleClaimsConfig.AllowPartyPVPSetting = value,
                     (simpleClaimsConfig, extraInfo) -> simpleClaimsConfig.AllowPartyPVPSetting).add()
+            .append(new KeyedCodec<String[]>("WorldClaimBlacklist", Codec.STRING_ARRAY),
+                    (simpleClaimsConfig, value, extraInfo) -> simpleClaimsConfig.WorldNameBlacklistForClaiming = value,
+                    (simpleClaimsConfig, extraInfo) -> simpleClaimsConfig.WorldNameBlacklistForClaiming).add()
             .build();
 
     private int DefaultPartyClaimsAmount = 25;
@@ -39,6 +42,7 @@ public class SimpleClaimsConfig {
     private boolean DefaultPartyBlockInteractEnabled = false;
     private boolean DefaultPartyPVPEnabled = false;
     private boolean AllowPartyPVPSetting = true;
+    private String[] WorldNameBlacklistForClaiming = new String[0];
 
     private boolean ForceSimpleClaimsChunkWorldMap = true;
     private boolean CreativeModeBypassProtection = false;
@@ -77,5 +81,9 @@ public class SimpleClaimsConfig {
 
     public boolean isAllowPartyPVPSetting() {
         return AllowPartyPVPSetting;
+    }
+
+    public String[] getWorldNameBlacklistForClaiming() {
+        return WorldNameBlacklistForClaiming;
     }
 }

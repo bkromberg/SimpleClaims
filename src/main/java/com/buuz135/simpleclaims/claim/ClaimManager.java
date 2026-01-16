@@ -217,6 +217,7 @@ public class ClaimManager {
     public boolean canClaimInDimension(World world){
         if (world.getWorldConfig().isDeleteOnRemove()) return false;
         if (world.getName().contains("Gaia_Temple")) return false;
+        if (Arrays.asList(Main.CONFIG.get().getWorldNameBlacklistForClaiming()).contains(world.getName())) return false;
         return true;
     }
 
