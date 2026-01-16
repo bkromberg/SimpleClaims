@@ -1,3 +1,7 @@
+# 1.0.14
+
+* Fixed inviting players to a party using the GUI not working properly
+
 # 1.0.13
 
 * Filter out players that have a party from the invite dropdown
