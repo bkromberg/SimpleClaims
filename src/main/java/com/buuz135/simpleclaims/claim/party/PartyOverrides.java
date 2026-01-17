@@ -7,5 +7,6 @@ public class PartyOverrides {
     public static final String PARTY_PROTECTION_BREAK_BLOCKS = "simpleclaims.party.protection.break_blocks";
     public static final String PARTY_PROTECTION_INTERACT = "simpleclaims.party.protection.interact";
     public static final String PARTY_PROTECTION_PVP = "simpleclaims.party.protection.pvp";
+    public static final String PARTY_PROTECTION_ALLOW_ENTRY = "simpleclaims.party.protection.allow_entry";
 
 }

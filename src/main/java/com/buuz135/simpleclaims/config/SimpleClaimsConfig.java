@@ -28,6 +28,9 @@ public class SimpleClaimsConfig {
             .append(new KeyedCodec<Boolean>("DefaultPartyPVPEnabled", Codec.BOOLEAN),
                     (simpleClaimsConfig, value, extraInfo) -> simpleClaimsConfig.DefaultPartyPVPEnabled = value,
                     (simpleClaimsConfig, extraInfo) -> simpleClaimsConfig.DefaultPartyPVPEnabled).add()
+            .append(new KeyedCodec<Boolean>("DefaultPartyAllowEntry", Codec.BOOLEAN),
+                    (simpleClaimsConfig, value, extraInfo) -> simpleClaimsConfig.DefaultPartyAllowEntry = value,
+                    (simpleClaimsConfig, extraInfo) -> simpleClaimsConfig.DefaultPartyAllowEntry).add()
             .append(new KeyedCodec<Boolean>("AllowPartyPVPSettingChanges", Codec.BOOLEAN),
                     (simpleClaimsConfig, value, extraInfo) -> simpleClaimsConfig.AllowPartyPVPSetting = value,
                     (simpleClaimsConfig, extraInfo) -> simpleClaimsConfig.AllowPartyPVPSetting).add()
@@ -40,6 +43,9 @@ public class SimpleClaimsConfig {
             .append(new KeyedCodec<Boolean>("AllowPartyInteractBlockSettingChanges", Codec.BOOLEAN),
                     (simpleClaimsConfig, value, extraInfo) -> simpleClaimsConfig.AllowPartyInteractBlockSetting = value,
                     (simpleClaimsConfig, extraInfo) -> simpleClaimsConfig.AllowPartyInteractBlockSetting).add()
+            .append(new KeyedCodec<Boolean>("AllowPartyAllowEntrySetting", Codec.BOOLEAN),
+                    (simpleClaimsConfig, value, extraInfo) -> simpleClaimsConfig.AllowPartyAllowEntrySetting = value,
+                    (simpleClaimsConfig, extraInfo) -> simpleClaimsConfig.AllowPartyAllowEntrySetting).add()
             .append(new KeyedCodec<String[]>("WorldClaimBlacklist", Codec.STRING_ARRAY),
                     (simpleClaimsConfig, value, extraInfo) -> simpleClaimsConfig.WorldNameBlacklistForClaiming = value,
                     (simpleClaimsConfig, extraInfo) -> simpleClaimsConfig.WorldNameBlacklistForClaiming).add()
@@ -49,6 +55,9 @@ public class SimpleClaimsConfig {
             .append(new KeyedCodec<String[]>("FullWorldProtection", Codec.STRING_ARRAY),
                     (simpleClaimsConfig, value, extraInfo) -> simpleClaimsConfig.FullWorldProtection = value,
                     (simpleClaimsConfig, extraInfo) -> simpleClaimsConfig.FullWorldProtection).add()
+            .append(new KeyedCodec<Boolean>("EXPERIMENTAL-EnableAlloyEntryTesting", Codec.BOOLEAN),
+                    (simpleClaimsConfig, value, extraInfo) -> simpleClaimsConfig.EnableAlloyEntryTesting = value,
+                    (simpleClaimsConfig, extraInfo) -> simpleClaimsConfig.EnableAlloyEntryTesting).add()
             .build();
 
     private int DefaultPartyClaimsAmount = 25;
@@ -56,13 +65,16 @@ public class SimpleClaimsConfig {
     private boolean DefaultPartyBlockBreakEnabled = false;
     private boolean DefaultPartyBlockInteractEnabled = false;
     private boolean DefaultPartyPVPEnabled = false;
+    private boolean DefaultPartyAllowEntry = true;
     private boolean AllowPartyPVPSetting = true;
     private boolean AllowPartyPlaceBlockSetting = true;
     private boolean AllowPartyBreakBlockSetting = true;
     private boolean AllowPartyInteractBlockSetting = true;
+    private boolean AllowPartyAllowEntrySetting = true;
     private String[] WorldNameBlacklistForClaiming = new String[0];
     private String TitleTopClaimTitleText = "Simple Claims";
     private String[] FullWorldProtection = new String[0];
+    private boolean EnableAlloyEntryTesting = false;
 
     private boolean ForceSimpleClaimsChunkWorldMap = true;
     private boolean CreativeModeBypassProtection = false;
@@ -125,5 +137,17 @@ public class SimpleClaimsConfig {
 
     public String[] getFullWorldProtection() {
         return FullWorldProtection;
+    }
+
+    public boolean isDefaultPartyAllowEntry() {
+        return DefaultPartyAllowEntry;
+    }
+
+    public boolean isAllowPartyAllowEntrySetting() {
+        return AllowPartyAllowEntrySetting;
+    }
+
+    public boolean isEnableAlloyEntryTesting() {
+        return EnableAlloyEntryTesting;
     }
 }

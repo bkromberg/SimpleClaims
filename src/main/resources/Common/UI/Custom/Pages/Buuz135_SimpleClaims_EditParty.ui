@@ -157,6 +157,11 @@ $C.@PageOverlay {
             @Text = "PVP";
             Padding: (Bottom: 4);
           }
+
+          $C.@CheckBoxWithLabel #AllowEntrySetting {
+            @Text = "Allow Entry";
+            Padding: (Bottom: 4);
+          }
         }
 
        Group #Separator{

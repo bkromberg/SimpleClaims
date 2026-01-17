@@ -129,6 +129,9 @@ public class PartyInfoEditGui extends InteractiveCustomUIPage<PartyInfoEditGui.P
             if (action.equals("PVPSetting")) {
                 this.info.setOverride(new PartyOverride(PartyOverrides.PARTY_PROTECTION_PVP, new PartyOverride.PartyOverrideValue("bool", !this.info.isPVPEnabled())));
             }
+            if (action.equals("AllowEntrySetting")) {
+                this.info.setOverride(new PartyOverride(PartyOverrides.PARTY_PROTECTION_ALLOW_ENTRY, new PartyOverride.PartyOverrideValue("bool", !this.info.isAllowEntryEnabled())));
+            }
             UICommandBuilder commandBuilder = new UICommandBuilder();
             UIEventBuilder eventBuilder = new UIEventBuilder();
             this.build(ref, commandBuilder, eventBuilder, store);
@@ -326,12 +329,16 @@ public class PartyInfoEditGui extends InteractiveCustomUIPage<PartyInfoEditGui.P
         uiCommandBuilder.set("#PVPSetting #CheckBox.Value", this.info.isPVPEnabled());
         if (!isOpEdit)
             uiCommandBuilder.set("#PVPSetting #CheckBox.Disabled", !playerCanModify || !Main.CONFIG.get().isAllowPartyPVPSetting());
+        uiCommandBuilder.set("#AllowEntrySetting #CheckBox.Value", this.info.isAllowEntryEnabled());
+        uiCommandBuilder.set("#AllowEntrySetting.Visible", Main.CONFIG.get().isEnableAlloyEntryTesting());
+        if (!isOpEdit)
+            uiCommandBuilder.set("#AllowEntrySetting #CheckBox.Disabled", !playerCanModify || !Main.CONFIG.get().isAllowPartyAllowEntrySetting());
 
         uiEventBuilder.addEventBinding(CustomUIEventBindingType.ValueChanged, "#PlaceBlocksSetting #CheckBox", EventData.of("RemoveButtonAction", "PlaceBlocksSetting:0"), false);
         uiEventBuilder.addEventBinding(CustomUIEventBindingType.ValueChanged, "#BreakBlocksSetting #CheckBox", EventData.of("RemoveButtonAction", "BreakBlocksSetting:0"), false);
         uiEventBuilder.addEventBinding(CustomUIEventBindingType.ValueChanged, "#InteractBlocksSetting #CheckBox", EventData.of("RemoveButtonAction", "InteractBlocksSetting:0"), false);
         uiEventBuilder.addEventBinding(CustomUIEventBindingType.ValueChanged, "#PVPSetting #CheckBox", EventData.of("RemoveButtonAction", "PVPSetting:0"), false);
-
+        uiEventBuilder.addEventBinding(CustomUIEventBindingType.ValueChanged, "#AllowEntrySetting #CheckBox", EventData.of("RemoveButtonAction", "AllowEntrySetting:0"), false);
 
         uiCommandBuilder.set("#ClaimColorPickerGroup #ClaimColorPicker.Value", String.format("#%06X", (0xFFFFFF & this.info.getColor())));
         //uiCommandBuilder.set("#ClaimColorPickerGroup #ClaimColorPicker.IsReadOnly", !playerCanModify);

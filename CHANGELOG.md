@@ -4,6 +4,9 @@
 * Added a config option to change the title top line when entering a claim, closes #16
 * Fixed a bug where the admin-modify-chunk-all command wasn't updating parties amount if they had the same amount as the
   config
+* Added a config to filly protect worlds, closes #73
+* [EXPERIMENTAL - ENABLED ON THE CONFIG] Added a allow entry party setting that stops players from entering a claimed
+  chunk if they arent allowed. This is workaround for hytale's interaction bugs #40 #19
 
 # 1.0.14
 

@@ -34,6 +34,7 @@ public class PartyInfo {
         setOverride(new PartyOverride(PartyOverrides.PARTY_PROTECTION_PLACE_BLOCKS, new PartyOverride.PartyOverrideValue("bool", Main.CONFIG.get().isDefaultPartyBlockPlaceEnabled())));
         setOverride(new PartyOverride(PartyOverrides.PARTY_PROTECTION_BREAK_BLOCKS, new PartyOverride.PartyOverrideValue("bool", Main.CONFIG.get().isDefaultPartyBlockBreakEnabled())));
         setOverride(new PartyOverride(PartyOverrides.PARTY_PROTECTION_INTERACT, new PartyOverride.PartyOverrideValue("bool", Main.CONFIG.get().isDefaultPartyBlockInteractEnabled())));
+        setOverride(new PartyOverride(PartyOverrides.PARTY_PROTECTION_ALLOW_ENTRY, new PartyOverride.PartyOverrideValue("bool", Main.CONFIG.get().isDefaultPartyAllowEntry())));
         this.createdTracked = new ModifiedTracking();
         this.modifiedTracked = new ModifiedTracking();
         this.partyAllies = new HashSet<>();
@@ -156,6 +157,14 @@ public class PartyInfo {
             return (Boolean) override.getValue().getTypedValue();
         }
         return Main.CONFIG.get().isDefaultPartyPVPEnabled();
+    }
+
+    public boolean isAllowEntryEnabled() {
+        var override = this.getOverride(PartyOverrides.PARTY_PROTECTION_ALLOW_ENTRY);
+        if (override != null) {
+            return (Boolean) override.getValue().getTypedValue();
+        }
+        return Main.CONFIG.get().isDefaultPartyAllowEntry();
     }
 
     public void setOverride(PartyOverride override){
