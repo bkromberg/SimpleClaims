@@ -12,6 +12,7 @@
 * Added a config option to configure blocks that will ignore all the restrictions
 * Added an option to remove pvp between party members (Friendly Fire), closes #23
 * Added a config option to limit how many party member and allies can a party have closes #20
+* Improved map so less detail is lost in claimed chunks
 
 # 1.0.14
 

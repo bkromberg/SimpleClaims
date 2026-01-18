@@ -294,20 +294,6 @@ public class CustomImageBuilder {
                 int blockId = this.blockSamples[sampleIndex];
                 getBlockColor(blockId, tint, this.outColor);
 
-                //CUSTOM CODE
-                if (partyInfo != null){
-                    var isBorder = false;
-                    var borderSize = 2;
-                    if ((ix <= borderSize && (nearbyChunks[3] == null || !nearbyChunks[3].getPartyOwner().equals(partyInfo.getId()))) //WEST
-                            || (ix >= this.image.width - borderSize - 1  && (nearbyChunks[2] == null || !nearbyChunks[2].getPartyOwner().equals(partyInfo.getId()))) //EAST
-                            || (iz <= borderSize && (nearbyChunks[1] == null || !nearbyChunks[1].getPartyOwner().equals(partyInfo.getId()))) // NORTH
-                            || (iz >= this.image.height - borderSize - 1 && (nearbyChunks[0] == null || !nearbyChunks[0].getPartyOwner().equals(partyInfo.getId())))) {
-                        isBorder = true;
-                    }
-                    getForceBlockColor(blockId, partyInfo.getColor(), this.outColor, isBorder);
-                }
-                //-
-
                 short north = this.neighborHeightSamples[sampleZ * (this.sampleWidth + 2) + sampleX + 1];
                 short south = this.neighborHeightSamples[(sampleZ + 2) * (this.sampleWidth + 2) + sampleX + 1];
                 short west = this.neighborHeightSamples[(sampleZ + 1) * (this.sampleWidth + 2) + sampleX];
@@ -326,6 +312,20 @@ public class CustomImageBuilder {
                         getFluidColor(fluidId, environmentId, fluidDepth, this.outColor);
                     }
                 }
+
+                //CUSTOM CODE
+                if (partyInfo != null) {
+                    var isBorder = false;
+                    var borderSize = 2;
+                    if ((ix <= borderSize && (nearbyChunks[3] == null || !nearbyChunks[3].getPartyOwner().equals(partyInfo.getId()))) //WEST
+                            || (ix >= this.image.width - borderSize - 1 && (nearbyChunks[2] == null || !nearbyChunks[2].getPartyOwner().equals(partyInfo.getId()))) //EAST
+                            || (iz <= borderSize && (nearbyChunks[1] == null || !nearbyChunks[1].getPartyOwner().equals(partyInfo.getId()))) // NORTH
+                            || (iz >= this.image.height - borderSize - 1 && (nearbyChunks[0] == null || !nearbyChunks[0].getPartyOwner().equals(partyInfo.getId())))) {
+                        isBorder = true;
+                    }
+                    getForceBlockColor(blockId, partyInfo.getColor(), this.outColor, isBorder);
+                }
+                //-
 
                 this.populateImageData(iz * this.image.width + ix, sampleX, sampleZ, minBlockX, minBlockZ);
             }
@@ -390,23 +390,17 @@ public class CustomImageBuilder {
         outColor.a = 255;
     }
 
-    private static void getForceBlockColor(int blockId, int biomeTintColor, @Nonnull CustomImageBuilder.Color outColor, boolean isBorder) {
-        int biomeTintR = biomeTintColor >> 16 & 255;
-        int biomeTintG = biomeTintColor >> 8 & 255;
-        int biomeTintB = biomeTintColor >> 0 & 255;
+    private static void getForceBlockColor(int blockId, int partyColor, @Nonnull CustomImageBuilder.Color outColor, boolean isBorder) {
+        int biomeTintR = partyColor >> 16 & 255;
+        int biomeTintG = partyColor >> 8 & 255;
+        int biomeTintB = partyColor >> 0 & 255;
 
+        float overlayAlpha = isBorder ? 0.75f : 0.4f;
 
-
-        float biomeTintMultiplier = isBorder ? 0.6f : 1f;
-
-
-
-        outColor.r = biomeTintR;
-        outColor.g = biomeTintG;
-        outColor.b = biomeTintB;
+        outColor.r = (int) (outColor.r * (1 - overlayAlpha) + biomeTintR * overlayAlpha);
+        outColor.g = (int) (outColor.g * (1 - overlayAlpha) + biomeTintG * overlayAlpha);
+        outColor.b = (int) (outColor.b * (1 - overlayAlpha) + biomeTintB * overlayAlpha);
         outColor.a = 255;
-
-        outColor.multiply(biomeTintMultiplier);
     }
 
     private static void getFluidColor(int fluidId, int environmentId, int fluidDepth, @Nonnull CustomImageBuilder.Color outColor) {
