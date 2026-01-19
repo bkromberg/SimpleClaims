@@ -1,3 +1,7 @@
+# 1.0.18
+
+* Fixed not shipping SQLite dependency, closes #94 closes #95
+
 # 1.0.17
 
 * Converted data storage to SQLite for better stability. BACKUP YOUR DATA! SimpleClaims will automatically migrate your
