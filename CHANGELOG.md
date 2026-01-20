@@ -5,6 +5,7 @@
 * Removed party ownership transfer when leaving a party, closes #100
 * Added a config option to disband parties for inactivity, all the players need to be inactive for the party to be
   disbanded, closes #74
+* Added extra aliases to commands
 
 # 1.0.18
 

@@ -29,7 +29,7 @@ public class SimpleClaimProtectCommand extends AbstractAsyncCommand {
 
     public SimpleClaimProtectCommand() {
         super("simpleclaims", "Opens the chunk claim gui");
-        this.addAliases("sc", "sc-chunks", "scc");
+        this.addAliases("sc", "sc-chunks", "scc", "chunk", "chunks", "claim", "claims");
         this.requirePermission(CommandMessages.BASE_PERM + "claim-gui");
 
         this.addSubCommand(new ClaimChunkCommand());
