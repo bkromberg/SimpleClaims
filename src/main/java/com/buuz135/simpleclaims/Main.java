@@ -12,11 +12,11 @@ import com.buuz135.simpleclaims.map.SimpleClaimsWorldMapProvider;
 import com.buuz135.simpleclaims.systems.events.*;
 import com.buuz135.simpleclaims.systems.tick.*;
 import com.buuz135.simpleclaims.util.PartyInactivityThread;
-import com.buuz135.simpleclaims.util.WindowExtraResourcesRewriter;
+import com.buuz135.simpleclaims.util.WindowExtraResourcesState;
+import com.buuz135.simpleclaims.util.WindowPacketAdapters;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.event.events.player.AddPlayerToWorldEvent;
 import com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent;
-import com.hypixel.hytale.server.core.io.PacketHandler;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Interaction;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
@@ -69,6 +69,7 @@ public class Main extends JavaPlugin {
 
         IWorldMapProvider.CODEC.register(SimpleClaimsWorldMapProvider.ID, SimpleClaimsWorldMapProvider.class, SimpleClaimsWorldMapProvider.CODEC);
 
+        WindowPacketAdapters.install();
         ClaimManager.getInstance();
 
         this.getEventRegistry().registerGlobal(AddWorldEvent.class, (event) -> {
@@ -87,18 +88,16 @@ public class Main extends JavaPlugin {
             var playerRef = event.getHolder().getComponent(PlayerRef.getComponentType());
             ClaimManager.getInstance().setPlayerName(playerRef.getUuid(), player.getDisplayName(), System.currentTimeMillis());
 
-            PacketHandler ph = playerRef.getPacketHandler();
-            var ch = ph.getChannel();
-            var pipeline = playerRef.getPacketHandler().getChannel().pipeline();
-            if (pipeline.get(WindowExtraResourcesRewriter.HANDLER_NAME) == null) {
-                pipeline.addLast(WindowExtraResourcesRewriter.HANDLER_NAME, new WindowExtraResourcesRewriter());
-            }
-            // ensure per-channel cache exists
-            WindowExtraResourcesRewriter.getOrCreateMap(ch);
+            var ch = playerRef.getPacketHandler().getChannel();
+            WindowExtraResourcesState.getOrCreateMap(ch);
         });
 
         this.getEventRegistry().registerGlobal(PlayerDisconnectEvent.class, (event) -> {
             ClaimManager.getInstance().setPlayerName(event.getPlayerRef().getUuid(), event.getPlayerRef().getUsername(), System.currentTimeMillis());
+
+            var ch = event.getPlayerRef().getPacketHandler().getChannel();
+            var m = ch.attr(WindowExtraResourcesState.EXTRA_BY_WINDOW_ID).get();
+            if (m != null) m.clear();
         });
 
         var interaction = getCodecRegistry(Interaction.CODEC);
@@ -109,6 +108,12 @@ public class Main extends JavaPlugin {
 
         partyInactivityTickingSystem = new PartyInactivityThread();
         partyInactivityTickingSystem.start();
+    }
+
+    @Override
+    protected void shutdown() {
+        super.shutdown();
+        WindowPacketAdapters.uninstall();
     }
 
 }

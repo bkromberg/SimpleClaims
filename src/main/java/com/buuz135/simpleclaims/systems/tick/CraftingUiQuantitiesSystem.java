@@ -1,7 +1,7 @@
 package com.buuz135.simpleclaims.systems.tick;
 
 import com.buuz135.simpleclaims.util.BenchChestCache;
-import com.buuz135.simpleclaims.util.WindowExtraResourcesRewriter;
+import com.buuz135.simpleclaims.util.WindowExtraResourcesState;
 import com.buuz135.simpleclaims.util.WindowReflection;
 import com.hypixel.hytale.builtin.crafting.state.BenchState;
 import com.hypixel.hytale.builtin.crafting.window.SimpleCraftingWindow;
@@ -54,14 +54,17 @@ public class CraftingUiQuantitiesSystem extends EntityTickingSystem<EntityStore>
         long now = System.currentTimeMillis();
 
         var ch = playerRef.getPacketHandler().getChannel();
-        var map = WindowExtraResourcesRewriter.getOrCreateMap(ch);
+        var map = WindowExtraResourcesState.getOrCreateMap(ch);
 
         for (Window w : windows) {
             if (!(w instanceof SimpleCraftingWindow scw)) continue;
 
-            long allowedAt = nextAllowedMs.getOrDefault(scw, 0L);
-            if (now < allowedAt) continue;
-            nextAllowedMs.put(scw, now + 250L);
+            boolean firstTime = !initialized.contains(scw);
+            if (!firstTime) {
+                long allowedAt = nextAllowedMs.getOrDefault(scw, 0L);
+                if (now < allowedAt) continue;
+                nextAllowedMs.put(scw, now + 250L);
+            }
 
             BenchState benchState = WindowReflection.getBenchState(scw);
 
@@ -82,12 +85,12 @@ public class CraftingUiQuantitiesSystem extends EntityTickingSystem<EntityStore>
             section.setValid(true);
 
             map.put(scw.getId(), section.toPacket());
-
             lastHash.put(scw, hash);
 
-            // First time only: force one UpdateWindow soon
             if (initialized.add(scw)) {
                 WindowReflection.invalidate(scw);
+                // start throttle window after first init
+                nextAllowedMs.put(scw, now + 250L);
             }
         }
 
