@@ -49,7 +49,7 @@ public class ChunkInfoGui extends InteractiveCustomUIPage<ChunkInfoGui.ChunkInfo
             var playerRef = store.getComponent(ref, PlayerRef.getComponentType());
             var playerInstance = store.getComponent(ref, Player.getComponentType());
             var playerParty = ClaimManager.getInstance().getPartyFromPlayer(playerRef.getUuid());
-            if (playerParty == null){
+            if (playerParty == null && !isOp) {
                 this.sendUpdate();
                 return;
             }
