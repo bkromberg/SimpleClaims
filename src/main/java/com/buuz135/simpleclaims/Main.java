@@ -12,16 +12,14 @@ import com.buuz135.simpleclaims.map.SimpleClaimsWorldMapProvider;
 import com.buuz135.simpleclaims.systems.events.*;
 import com.buuz135.simpleclaims.systems.tick.*;
 import com.buuz135.simpleclaims.util.PartyInactivityThread;
-
-import com.buuz135.simpleclaims.systems.tick.WorldMapUpdateTickingSystem;
-import com.buuz135.simpleclaims.util.Permissions;
+import com.buuz135.simpleclaims.util.WindowExtraResourcesState;
+import com.buuz135.simpleclaims.util.WindowPacketAdapters;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.event.events.player.AddPlayerToWorldEvent;
 import com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Interaction;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
-
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.events.AddWorldEvent;
 import com.hypixel.hytale.server.core.universe.world.worldmap.provider.IWorldMapProvider;
@@ -59,6 +57,7 @@ public class Main extends JavaPlugin {
             this.getEntityStoreRegistry().registerSystem(new ChunkBordersTickingSystem());
         this.getEntityStoreRegistry().registerSystem(new CustomDamageEventSystem());
         this.getEntityStoreRegistry().registerSystem(new QueuedCraftClaimFilterSystem());
+        this.getEntityStoreRegistry().registerSystem(new CraftingUiQuantitiesSystem());
 
         // Register global (world-level) event systems for block damage. Allows us to block custom item interactions from damaging claims.
         this.getEntityStoreRegistry().registerSystem(new GlobalDamageBlockEventSystem());
@@ -70,6 +69,7 @@ public class Main extends JavaPlugin {
 
         IWorldMapProvider.CODEC.register(SimpleClaimsWorldMapProvider.ID, SimpleClaimsWorldMapProvider.class, SimpleClaimsWorldMapProvider.CODEC);
 
+        WindowPacketAdapters.install();
         ClaimManager.getInstance();
 
         this.getEventRegistry().registerGlobal(AddWorldEvent.class, (event) -> {
@@ -87,10 +87,17 @@ public class Main extends JavaPlugin {
             var player = event.getHolder().getComponent(Player.getComponentType());
             var playerRef = event.getHolder().getComponent(PlayerRef.getComponentType());
             ClaimManager.getInstance().setPlayerName(playerRef.getUuid(), player.getDisplayName(), System.currentTimeMillis());
+
+            var ch = playerRef.getPacketHandler().getChannel();
+            WindowExtraResourcesState.getOrCreateMap(ch);
         });
 
         this.getEventRegistry().registerGlobal(PlayerDisconnectEvent.class, (event) -> {
             ClaimManager.getInstance().setPlayerName(event.getPlayerRef().getUuid(), event.getPlayerRef().getUsername(), System.currentTimeMillis());
+
+            var ch = event.getPlayerRef().getPacketHandler().getChannel();
+            var m = ch.attr(WindowExtraResourcesState.EXTRA_BY_WINDOW_ID).get();
+            if (m != null) m.clear();
         });
 
         var interaction = getCodecRegistry(Interaction.CODEC);
@@ -101,6 +108,12 @@ public class Main extends JavaPlugin {
 
         partyInactivityTickingSystem = new PartyInactivityThread();
         partyInactivityTickingSystem.start();
+    }
+
+    @Override
+    protected void shutdown() {
+        super.shutdown();
+        WindowPacketAdapters.uninstall();
     }
 
 }
