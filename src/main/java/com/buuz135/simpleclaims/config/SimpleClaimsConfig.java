@@ -39,6 +39,7 @@ public class SimpleClaimsConfig {
     private String[] ClaimCommandAliases = new String[]{"sc", "sc-chunks", "scc", "chunk", "chunks", "claim", "claims"};
     private String[] WorldNameBlacklistForClaiming = new String[0];
     private String TitleTopClaimTitleText = "Simple Claims";
+    private String WildernessName = "Wilderness";
     private String[] FullWorldProtection = new String[0];
     private boolean EnableAlloyEntryTesting = false;
     private boolean EnableParticleBorders = true;
@@ -128,6 +129,10 @@ public class SimpleClaimsConfig {
 
     public String getTitleTopClaimTitleText() {
         return TitleTopClaimTitleText;
+    }
+
+    public String getWildernessName() {
+        return WildernessName;
     }
 
     public String[] getFullWorldProtection() {

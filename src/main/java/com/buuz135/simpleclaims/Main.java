@@ -53,7 +53,7 @@ public class Main extends JavaPlugin {
         this.getEntityStoreRegistry().registerSystem(new PlaceBlockEventSystem());
         this.getEntityStoreRegistry().registerSystem(new InteractEventSystem());
         this.getEntityStoreRegistry().registerSystem(new PickupInteractEventSystem());
-        this.getEntityStoreRegistry().registerSystem(new TitleTickingSystem(CONFIG.get().getTitleTopClaimTitleText()));
+        this.getEntityStoreRegistry().registerSystem(new TitleTickingSystem(CONFIG.get().getTitleTopClaimTitleText(), CONFIG.get().getWildernessName()));
         if (CONFIG.get().isEnableAlloyEntryTesting())
             this.getEntityStoreRegistry().registerSystem(new EntryTickingSystem());
         if (CONFIG.get().isEnableParticleBorders())

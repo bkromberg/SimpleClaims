@@ -2,6 +2,7 @@
 
 * Added a config option to limit how many claims a player can have, closes #132
 * Added a way to increase chunk limit by playtime, closes #46
+* Added a config value to change the wilderness text, closes #93
 
 # 1.0.26
 

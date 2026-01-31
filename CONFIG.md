@@ -71,6 +71,7 @@ Global settings that affect claiming and protection across the server.
 - **FullWorldProtection** (String Array, Default: `[]`): A list of world names where the entire world is protected as if
   it were claimed.
 - **TitleTopClaimTitleText** (String, Default: `"Simple Claims"`): The text displayed at the top of the claim UI.
+- **WildernessName** (String, Default: `"Wilderness"`): The text displayed when a player is in an unclaimed area.
 - **CreativeModeBypassProtection** (Boolean, Default: `false`): If `true`, players in Creative Mode will bypass all
   claim protections.
 - **BlocksThatIgnoreInteractRestrictions** (String Array, Default: `["gravestone"]`): A list of block IDs that can

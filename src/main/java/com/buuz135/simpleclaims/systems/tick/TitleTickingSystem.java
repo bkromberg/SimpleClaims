@@ -22,14 +22,16 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class TitleTickingSystem extends EntityTickingSystem<EntityStore> {
 
-    private static final Message WILDERNESS_MESSAGE = Message.raw("Wilderness").color(Color.GREEN);
+    private final Message wildernessMessage;
+    private final String wildernessText;
     private final Message simpleClaimsMessage;
-    private static final String WILDERNESS_TEXT = "Wilderness";
     private final Map<UUID, String> playerLastTitle;
 
-    public TitleTickingSystem(String topLine) {
+    public TitleTickingSystem(String topLine, String wildernessName) {
         this.playerLastTitle = new ConcurrentHashMap<>();
-        simpleClaimsMessage = Message.raw(topLine);
+        this.simpleClaimsMessage = Message.raw(topLine);
+        this.wildernessText = wildernessName;
+        this.wildernessMessage = Message.raw(this.wildernessText).color(Color.GREEN);
     }
 
     @Override
@@ -38,8 +40,8 @@ public class TitleTickingSystem extends EntityTickingSystem<EntityStore> {
         PlayerRef playerRef = store.getComponent(ref, PlayerRef.getComponentType());
         Player player = store.getComponent(ref, Player.getComponentType());
 
-        Message titleMessage = WILDERNESS_MESSAGE;
-        String titleText = WILDERNESS_TEXT;
+        Message titleMessage = this.wildernessMessage;
+        String titleText = this.wildernessText;
 
         var chunkInfo = ClaimManager.getInstance().getChunkRawCoords(
                 player.getWorld().getName(),
