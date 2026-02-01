@@ -5,6 +5,7 @@ import com.buuz135.simpleclaims.claim.ClaimManager;
 import com.buuz135.simpleclaims.claim.party.PartyOverride;
 import com.buuz135.simpleclaims.claim.party.PartyOverrides;
 import com.buuz135.simpleclaims.commands.CommandMessages;
+import com.buuz135.simpleclaims.util.Permissions;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.command.system.CommandSender;
 import com.hypixel.hytale.server.core.command.system.arguments.system.RequiredArg;
@@ -43,8 +44,12 @@ public class OpAddChunkAmountCommand extends AbstractAsyncCommand {
             sender.sendMessage(CommandMessages.PARTY_NOT_FOUND);
             return CompletableFuture.completedFuture(null);
         }
-        if (party.getMaxClaimAmount() + selectedAmount > Main.CONFIG.get().getMaxAddChunkAmount()) {
-            sender.sendMessage(CommandMessages.MAX_ADD_CHUNK_REACHED.param("limit", Main.CONFIG.get().getMaxAddChunkAmount()));
+        var maxAmount = Main.CONFIG.get().getMaxAddChunkAmount();
+        var permissionAmount = Permissions.getPermissionMaxAddChunkAmount(uuidSelectedPlayer);
+        if (permissionAmount > maxAmount) maxAmount = permissionAmount;
+
+        if (party.getMaxClaimAmount() + selectedAmount > maxAmount) {
+            sender.sendMessage(CommandMessages.MAX_ADD_CHUNK_REACHED.param("limit", maxAmount));
             return CompletableFuture.completedFuture(null);
         }
 

@@ -10,16 +10,27 @@ import java.util.UUID;
 public class Permissions {
 
     public static final String CLAIM_CHUNK_AMOUNT = "simpleclaims.party.claim_chunk_amount";
+    public static final String MAX_ADD_CHUNK_AMOUNT = "simpleclaims.admin.max_add_chunk_amount";
 
     public static int getPermissionClaimAmount(UUID uuid) { //TODO Check of admin parties
+        return getIntPermission(uuid, CLAIM_CHUNK_AMOUNT);
+    }
+
+    public static int getPermissionMaxAddChunkAmount(UUID uuid) {
+        return getIntPermission(uuid, MAX_ADD_CHUNK_AMOUNT);
+    }
+
+    private static int getIntPermission(UUID uuid, String permissionNode) {
         int amount = -1;
         for (PermissionProvider provider : PermissionsModule.get().getProviders()) {
             if (provider.getName().equals("LuckPerms")) {
                 for (String perm : LuckPermsHelper.getPerms(uuid)) {
-                    try {
-                        var parsed = Integer.parseInt(perm.replace(CLAIM_CHUNK_AMOUNT + ".", ""));
-                        if (parsed > amount) amount = parsed;
-                    } catch (NumberFormatException e) {
+                    if (perm.startsWith(permissionNode + ".")) {
+                        try {
+                            var parsed = Integer.parseInt(perm.replace(permissionNode + ".", ""));
+                            if (parsed > amount) amount = parsed;
+                        } catch (NumberFormatException ignored) {
+                        }
                     }
                 }
                 return amount;
@@ -30,11 +41,11 @@ public class Permissions {
                 userNodes.addAll(provider.getGroupPermissions(s));
             }
             for (String node : userNodes) {
-                if (node.contains(CLAIM_CHUNK_AMOUNT)) {
+                if (node.startsWith(permissionNode + ".")) {
                     try {
-                        var parsed = Integer.parseInt(node.replace(CLAIM_CHUNK_AMOUNT + ".", ""));
+                        var parsed = Integer.parseInt(node.replace(permissionNode + ".", ""));
                         if (parsed > amount) amount = parsed;
-                    } catch (NumberFormatException e) {
+                    } catch (NumberFormatException ignored) {
                     }
                 }
             }
