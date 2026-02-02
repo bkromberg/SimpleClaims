@@ -66,6 +66,7 @@ public class InteractGui extends GuiWithParent<InteractGui.ChunkListGuiData> {
             if (data.action.equals("InteractPortalSetting")) {
                 this.partyInfo.setOverride(new PartyOverride(PartyOverrides.PARTY_PROTECTION_INTERACT_PORTAL, new PartyOverride.PartyOverrideValue("bool", !this.partyInfo.isPortalInteractEnabled())));
             }
+            ClaimManager.getInstance().saveParty(this.partyInfo);
             UICommandBuilder commandBuilder = new UICommandBuilder();
             UIEventBuilder eventBuilder = new UIEventBuilder();
             this.build(ref, commandBuilder, eventBuilder, store);
